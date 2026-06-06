@@ -1,0 +1,14 @@
+// Proof-of-Human v0.1
+// Mission: No bots. No engagement farms. Human-first.
+
+function proofOfHuman(userId) {
+  // v0.1: Simple check. v0.2: Passkey + biometrics
+  const isHuman = userId && userId.length > 0
+  
+  if (isHuman) {
+    return `\n=== Proof-of-Human v0.1 ===\nStatus: VERIFIED\nUser: ${userId}\nRep: +1 for being real\nWelcome to authenticated internet.\n`
+  }
+  return "FAILED: Bots not allowed in Heavenet\n"
+}
+
+console.log(proofOfHuman("TokolloOG"))
