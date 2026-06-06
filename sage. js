@@ -1,0 +1,17 @@
+// Sage: Knowledge Engine v0.1
+// Mission: Signal > Noise. No ads. Sources required.
+
+function sage(query) {
+  const response = {
+    query: query,
+    answer: "Heavenet is authenticated + curated + human-first internet.",
+    signal: "Law II: Rep > Equity. No engagement farming.",
+    version: "v0.1 - stub",
+    next: "v0.2 will add real search + citations"
+  }
+  
+  return `\n=== Sage v0.1 ===\nQuery: ${response.query}\n\nAnswer: ${response.answer}\nSignal: ${response.signal}\n\n[${response.version}] ${response.next}\n`
+}
+
+// Run it
+console.log(sage("What is Heavenet?"))
