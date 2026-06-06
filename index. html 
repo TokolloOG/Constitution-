@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heavenet - Internet with Intention</title>
+  <style>
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #00ff88;
+      border-bottom: 2px solid #00ff88;
+      padding-bottom: 10px;
+    }
+    .law {
+      margin: 15px 0;
+      padding: 10px;
+      background: #111;
+      border-left: 3px solid #00ff88;
+    }
+    .cta {
+      margin-top: 40px;
+      padding: 20px;
+      background: #111;
+      border: 1px solid #00ff88;
+    }
+    a { color: #00ff88; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>HEAVENET v0.1</h1>
+  <p><strong>Mission:</strong> Internet with intention. Authenticated + curated + human-first.</p>
+  
+  <h2>The 7 Laws</h2>
+  <div class="law">1. Fork > Exit</div>
+  <div class="law">2. Rep > Equity</div>
+  <div class="law">3. Code is Law</div>
+  <div class="law">4. Default to Open</div>
+  <div class="law">5. Ship Daily</div>
+  <div class="law">6. Users > Investors</div>
+  <div class="law">7. Heavenet Owns Heavenet</div>
+  
+  <div class="cta">
+    <h3>Founder #1: TokolloOG</h3>
+    <p>Rep > Equity. No ads. No bots. Just signal.</p>
+    <p><a href="https://github.com/TokolloOG/constitution-">View Constitution →</a></p>
+    <p>Run: <code>node oath.js</code> | <code>node sage.js</code></p>
+  </div>
+</body>
+</html>
