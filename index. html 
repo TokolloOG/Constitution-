@@ -34,7 +34,7 @@
   </style>
 </head>
 <body>
-  <h1>HEAVENET v0.1</h1>
+  <h1>HEAVENET v0.2</h1>
   <p><strong>Mission:</strong> Internet with intention. Authenticated + curated + human-first.</p>
   
   <h2>The 7 Laws</h2>
@@ -43,7 +43,7 @@
   <div class="law">3. Code is Law</div>
   <div class="law">4. Default to Open</div>
   <div class="law">5. Ship Daily</div>
-  <div class="law">6. Users > Investors</div>
+  <div class="law">6. Automate Proof</div>
   <div class="law">7. Heavenet Owns Heavenet</div>
   
   <div class="cta">
