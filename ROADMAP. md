@@ -1,0 +1,21 @@
+# Heavenet Roadmap v0.1
+
+**Vision**: Internet with intention. Authenticated + curated + human-first.
+
+## Phase 1: Proof of Concept [NOW]
+- [x] Constitution + 7 Laws
+- [ ] Oath CLI - take the Oath in terminal
+- [ ] Sage v0.1 - knowledge engine, no ads
+- [ ] Proof-of-Human stub - passkey login
+
+## Phase 2: Core Apps
+- [ ] Sage - Anti-Google search with citations
+- [ ] Forum - reputation-weighted discussions
+- [ ] Library - micropayments for knowledge
+
+## Phase 3: Protocol
+- [ ] Overlay protocol on existing web
+- [ ] Rep > Equity scoring system
+- [ ] Decentralized storage via IPFS
+
+**Rule**: Ship weekly. No feature takes >7 days for v0.1
