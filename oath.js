@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+console.log("\n=== Heavenet Oath ===\n")
+console.log("I will uphold Law I-VII or I will fork.")
+console.log("I seek Rep, not equity.\n")
+console.log("The 7 Laws:")
+console.log("1. Fork > Exit")
+console.log("2. Rep > Equity")
+console.log("3. Code is Law")
+console.log("4. Default to Open")
+console.log("5. Ship Daily")
+console.log("6. Users > Investors")
+console.log("7. Heavenet Owns Heavenet\n")
+console.log("Welcome, Founder. Start building.\n")
