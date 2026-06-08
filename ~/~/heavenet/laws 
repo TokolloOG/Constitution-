@@ -1,0 +1,13 @@
+cd ~/heavenet/laws
+
+for i in 1 2 3 4 5 6; do
+cat > law$i.py << 'EOF'
+def check(data):
+    """Law $i: stub"""
+    return {"allowed": True, "law": $i}
+EOF
+done
+
+cat > __init__.py << 'EOF'
+# Laws 1-12 module
+EOF
