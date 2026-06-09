@@ -1,10 +1,14 @@
-from datetime import datetime
-
-def check(data):
-    allowed = data.get('api_key') == 'heavenet-secret-123'
+def check_law_2(data):
+    """
+    Validates if the request contains 'api_key'.
     
-    return {
-        "allowed": allowed,
-        "ip": data.get('ip'),
-        "timestamp": datetime.now().isoformat()
-    }
+    Args:
+        data (dict): Request data to validate
+        
+    Returns:
+        dict: {"valid": bool, "error": str or None}
+    """
+    if 'api_key' not in data or data['api_key'] is None:
+        return {"valid": False, "error": "Missing api_key"}
+    
+    return {"valid": True}
