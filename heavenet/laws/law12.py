@@ -1,6 +1,6 @@
 def check_law_12(data):
     """
-    Final security check: ensure no SQL injection keywords exist in any string value.
+    Law 12: Final security check: ensure no SQL injection keywords exist in any string value.
     Checks for dangerous SQL keywords: DROP, DELETE, UNION, INSERT, UPDATE, SELECT.
     
     Args:
@@ -28,12 +28,12 @@ def check_law_12(data):
             obj_upper = obj.upper()
             for keyword in dangerous_keywords:
                 if keyword in obj_upper:
-                    return False, f"SQL injection detected at {path}: found '{keyword}' keyword"
+                    return False, "SQL injection detected at " + path + ": found '" + keyword + "' keyword"
         
         # If it's a dictionary, recursively check all values
         elif isinstance(obj, dict):
             for key, value in obj.items():
-                new_path = f"{path}.{key}"
+                new_path = path + "." + key
                 is_safe, error = check_for_sql_injection(value, new_path)
                 if not is_safe:
                     return False, error
@@ -41,7 +41,7 @@ def check_law_12(data):
         # If it's a list, recursively check all items
         elif isinstance(obj, list):
             for i, item in enumerate(obj):
-                new_path = f"{path}[{i}]"
+                new_path = path + "[" + str(i) + "]"
                 is_safe, error = check_for_sql_injection(item, new_path)
                 if not is_safe:
                     return False, error
@@ -50,14 +50,14 @@ def check_law_12(data):
     
     try:
         if not isinstance(data, dict):
-            return {"valid": False, "error": "Data must be a dictionary"}
+            return {"valid": False, "error": "Data must be a dictionary", "law": 12}
         
         is_safe, error_msg = check_for_sql_injection(data)
         
         if not is_safe:
-            return {"valid": False, "error": error_msg}
+            return {"valid": False, "error": error_msg, "law": 12}
         
-        return {"valid": True}
+        return {"valid": True, "law": 12}
     
     except Exception as e:
-        return {"valid": False, "error": f"SQL injection check error: {str(e)}"}
+        return {"valid": False, "error": "SQL injection check error: " + str(e), "law": 12}

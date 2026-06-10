@@ -2,7 +2,7 @@ import ipaddress
 
 def check_law_7(data):
     """
-    Validates if 'ip' address is not in the blocked list.
+    Law 7: Validates if 'ip' address is not in the blocked list.
     
     Args:
         data (dict): Request data to validate
@@ -13,7 +13,7 @@ def check_law_7(data):
     blocked_ips = ['192.168.0.1', '10.0.0.1']
     
     if 'ip' not in data:
-        return {"valid": False, "error": "Missing ip"}
+        return {"valid": False, "error": "Missing ip", "law": 7}
     
     ip_str = data['ip']
     
@@ -23,9 +23,9 @@ def check_law_7(data):
         
         # Check if IP is in blocked list
         if str(ip_obj) in blocked_ips:
-            return {"valid": False, "error": f"IP address {ip_str} is blocked"}
+            return {"valid": False, "error": "IP address " + ip_str + " is blocked", "law": 7}
         
-        return {"valid": True}
+        return {"valid": True, "law": 7}
     
     except ValueError:
-        return {"valid": False, "error": f"Invalid IP address: {ip_str}"}
+        return {"valid": False, "error": "Invalid IP address: " + ip_str, "law": 7}

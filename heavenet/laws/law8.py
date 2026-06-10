@@ -11,7 +11,7 @@ WINDOW_SECONDS = 60
 
 def check_law_8(data):
     """
-    Validates rate limit: max 100 requests per user_id per minute.
+    Law 8: Validates rate limit: max 100 requests per user_id per minute.
     Uses in-memory tracking with timestamp windows.
     
     Args:
@@ -21,7 +21,7 @@ def check_law_8(data):
         dict: {"valid": bool, "error": str or None, "requests_remaining": int or None}
     """
     if 'user_id' not in data:
-        return {"valid": False, "error": "Missing user_id"}
+        return {"valid": False, "error": "Missing user_id", "law": 8}
     
     user_id = data['user_id']
     current_time = datetime.now()
@@ -42,8 +42,9 @@ def check_law_8(data):
             requests_remaining = 0
             return {
                 "valid": False,
-                "error": f"Rate limit exceeded: {current_requests}/{RATE_LIMIT} requests in the last minute",
-                "requests_remaining": requests_remaining
+                "error": "Rate limit exceeded: " + str(current_requests) + "/" + str(RATE_LIMIT) + " requests in the last minute",
+                "requests_remaining": requests_remaining,
+                "law": 8
             }
         
         # Add current request timestamp
@@ -54,8 +55,9 @@ def check_law_8(data):
         
         return {
             "valid": True,
-            "requests_remaining": requests_remaining
+            "requests_remaining": requests_remaining,
+            "law": 8
         }
     
     except Exception as e:
-        return {"valid": False, "error": f"Rate limit check error: {str(e)}"}
+        return {"valid": False, "error": "Rate limit check error: " + str(e), "law": 8}

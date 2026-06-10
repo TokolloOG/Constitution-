@@ -1,21 +1,15 @@
 def check_law_6(data):
     """
-    Validates if 'action' is one of the allowed actions: create, read, update, delete.
+    Law 6: Placeholder law
     
     Args:
-        data (dict): Request data to validate
+        data (dict): Request data
         
     Returns:
-        dict: {"valid": bool, "error": str or None}
+        dict: {"valid": bool, "law": 6, "message": str}
     """
-    allowed_actions = ['create', 'read', 'update', 'delete']
-    
-    if 'action' not in data:
-        return {"valid": False, "error": "Missing action"}
-    
-    action = data['action']
-    
-    if action not in allowed_actions:
-        return {"valid": False, "error": "Invalid action"}
-    
-    return {"valid": True}
+    return {
+        "valid": True,
+        "law": 6,
+        "message": "Law 6 placeholder"
+    }

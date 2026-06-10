@@ -2,7 +2,7 @@ import hashlib
 
 def check_law_11(data):
     """
-    Verifies 'checksum' field matches MD5 hash of concatenated data values.
+    Law 11: Verifies 'checksum' field matches MD5 hash of concatenated data values.
     
     Args:
         data (dict): Request data containing a 'checksum' field and other data fields
@@ -11,7 +11,7 @@ def check_law_11(data):
         dict: {"valid": bool, "error": str or None}
     """
     if 'checksum' not in data:
-        return {"valid": False, "error": "Missing checksum field"}
+        return {"valid": False, "error": "Missing checksum field", "law": 11}
     
     provided_checksum = data['checksum']
     
@@ -34,10 +34,11 @@ def check_law_11(data):
         if provided_checksum != calculated_checksum:
             return {
                 "valid": False,
-                "error": f"Checksum mismatch. Expected: {calculated_checksum}, Got: {provided_checksum}"
+                "error": "Checksum mismatch. Expected: " + calculated_checksum + ", Got: " + provided_checksum,
+                "law": 11
             }
         
-        return {"valid": True}
+        return {"valid": True, "law": 11}
     
     except Exception as e:
-        return {"valid": False, "error": f"Checksum verification error: {str(e)}"}
+        return {"valid": False, "error": "Checksum verification error: " + str(e), "law": 11}
