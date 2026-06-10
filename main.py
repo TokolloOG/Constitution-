@@ -1,4 +1,6 @@
+import os
 from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 from heavenet.laws.law1 import check_law_1
 from heavenet.laws.law2 import check_law_2
 from heavenet.laws.law3 import check_law_3
@@ -11,6 +13,9 @@ from heavenet.laws.law9 import check_law_9
 from heavenet.laws.law10 import check_law_10
 from heavenet.laws.law11 import check_law_11
 from heavenet.laws.law12 import check_law_12
+
+# Load environment variables
+load_dotenv()
 
 # Create Flask app
 app = Flask(__name__)
@@ -99,4 +104,5 @@ def health():
     }), 200
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.getenv("FLASK_PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
