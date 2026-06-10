@@ -1,3 +1,4 @@
+from flask import Flask, request, jsonify
 from heavenet.laws.law1 import check_law_1
 from heavenet.laws.law2 import check_law_2
 from heavenet.laws.law3 import check_law_3
@@ -10,6 +11,9 @@ from heavenet.laws.law9 import check_law_9
 from heavenet.laws.law10 import check_law_10
 from heavenet.laws.law11 import check_law_11
 from heavenet.laws.law12 import check_law_12
+
+# Create Flask app
+app = Flask(__name__)
 
 # List of all law check functions in order
 LAWS = [
@@ -27,54 +31,72 @@ LAWS = [
     check_law_12
 ]
 
-def run_all_laws(data):
+@app.route('/verify', methods=['POST'])
+def verify():
     """
-    Run data through all 12 laws in order.
-    If any check returns valid=False, stop and return that error.
-    Only return success if all 12 pass.
-    
-    Args:
-        data (dict): Request data to validate
-        
-    Returns:
-        dict: Success or error response with law results
+    POST /verify endpoint
+    Accepts JSON data and runs all 12 law checks in order.
+    If any check fails, returns error with status 400.
+    If all pass, returns success with status 200.
     """
-    results = []
-    
-    for index, law_check in enumerate(LAWS, start=1):
-        result = law_check(data)
-        results.append({
-            "law": index,
-            "result": result
-        })
+    try:
+        # Get JSON data from request
+        data = request.get_json()
         
-        # If any check fails, stop and return the error
-        if not result.get("valid", False):
-            return {
-                "success": False,
-                "failed_law": index,
-                "error": result.get("error", "Unknown error"),
-                "results": results
-            }
+        if data is None:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid or missing JSON data"
+            }), 400
+        
+        # Run all 12 laws in order
+        results = []
+        
+        for index, law_check in enumerate(LAWS, start=1):
+            try:
+                result = law_check(data)
+                results.append({
+                    "law": index,
+                    "result": result
+                })
+                
+                # If any check fails, stop and return the error
+                if not result.get("valid", False):
+                    return jsonify({
+                        "status": "rejected",
+                        "failed_law": index,
+                        "error": result.get("error", "Unknown error"),
+                        "message": "Law " + str(index) + " validation failed"
+                    }), 400
+            
+            except Exception as e:
+                return jsonify({
+                    "status": "error",
+                    "failed_law": index,
+                    "error": "Exception in Law " + str(index) + ": " + str(e),
+                    "message": "Error processing law check"
+                }), 400
+        
+        # All 12 laws passed
+        return jsonify({
+            "status": "approved",
+            "message": "All 12 laws passed"
+        }), 200
     
-    # All 12 laws passed
-    return {
-        "success": True,
-        "message": "All 12 laws passed successfully",
-        "results": results
-    }
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "error": str(e),
+            "message": "Server error during verification"
+        }), 500
+
+@app.route('/health', methods=['GET'])
+def health():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "healthy",
+        "message": "Heavenet API is running"
+    }), 200
 
 if __name__ == "__main__":
-    # Test data
-    test_data = {
-        "api_key": "heavenet-secret-123",
-        "ip": "127.0.0.1",
-        "user_id": "user123",
-        "action": "read",
-        "user_agent": "Mozilla/5.0",
-        "timestamp": 1623456789,
-        "data_field": "test_value"
-    }
-    
-    output = run_all_laws(test_data)
-    print(output)
+    app.run(debug=True, host='0.0.0.0', port=5000)
