@@ -215,3 +215,46 @@ def test_law_vi_no_telemetry():
 def test_law_vi_encryption_exists():
     """Law VI: Posts must be encrypted. Plaintext is surveillance."""
     assert Path("daemon/crypto.js").exists(), "Law VI violation: crypto.js missing. Posts are plaintext."
+import subprocess
+import json
+from pathlib import Path
+
+def test_law_vii_firmware_multisig():
+    """Law VII: Heavenet Owns Heavenet. Firmware needs 7-of-12 signatures."""
+    firmware_dir = Path("firmware")
+    if not firmware_dir.exists():
+        return  # No firmware yet, skip
+    
+    sig_dir = firmware_dir / "signatures"
+    assert sig_dir.exists(), "Law VII violation: firmware/signatures/ missing. No multisig."
+    
+    sig_files = list(sig_dir.glob("*.json"))
+    assert len(sig_files) >= 7, f"Law VII violation: Only {len(sig_files)} signatures. Need 7-of-12."
+    
+    # Verify each signature with proof.js
+    valid_sigs = 0
+    total_rep = 0
+    
+    for sig_file in sig_files:
+        result = subprocess.run(
+            ["node", "proof.js", str(sig_file)],
+            capture_output=True
+        )
+        if result.returncode == 0:
+            valid_sigs += 1
+            # Extract Rep from proof.js output
+            data = json.loads(sig_file.read_text())
+            total_rep += data["rep"]
+    
+    assert valid_sigs >= 7, f"Law VII violation: Only {valid_sigs} valid signatures. Need 7."
+    assert total_rep >= 7000, f"Law VII violation: Total Rep {total_rep} < 7000. Sysadmins must have Rep."
+    
+    print(f"✅ Law VII PASS: {valid_sigs} sigs, {total_rep} total Rep")
+
+def test_law_vii_no_single_admin():
+    """Law VII: No single point of failure. Check for admin backdoors."""
+    forbidden = ["admin_key", "root_access", "master_password", "god_mode"]
+    for file in Path(".").rglob("*.py"):
+        content = file.read_text().lower()
+        for term in forbidden:
+            assert term not in content, f"Law VII violation: {file} contains {term}. No kings."
