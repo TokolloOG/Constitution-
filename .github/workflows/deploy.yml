@@ -23,3 +23,54 @@ jobs:
     
     - name: Build Docker image
       run: docker build -t heavenet-api .
+name: Law III Enforcement
+# Code is Law. If it's not in the repo, it doesn't exist.
+# This workflow runs on every PR and blocks merges that violate the 7 Laws.
+
+on:
+  pull_request:
+    branches: [ main, genesis ]
+  push:
+    branches: [ main, genesis ]
+
+jobs:
+  enforce_laws:
+    name: Verify Constitution
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pyyaml
+      
+      - name: Law I-VII Static Tests
+        run: |
+          echo "Running Law III: Code is Law"
+          echo "If tests fail, the Laws have been violated."
+          pytest -v test_laws.py
+      
+      - name: Law III - README exists
+        run: |
+          test -f README.md || (echo "Law III violation: README.md missing" && exit 1)
+          test -f CONSTITUTION.md || (echo "Law III violation: CONSTITUTION.md missing" && exit 1)
+      
+      - name: Law II - Rep > Equity Check
+        run: |
+          echo "Scanning for forbidden equity terms..."
+          ! grep -ri "cap_table\|SAFE_\|investor_agreement" --include="*.md" --include="*.py" . || \
+          (echo "Law II violation: Equity terms found. Rep > Equity." && exit 1)
+
+      - name: Post result to Agora
+        if: failure()
+        run: |
+          echo "❌ LAWS VIOLATED. This PR cannot merge."
+          echo "Read CONSTITUTION.md. Fix the code. Law I: Fork > Exit."
