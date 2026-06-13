@@ -151,3 +151,43 @@ def main():
 
 if __name__ == "__main__":
     main()
+import pytest
+import yaml
+from pathlib import Path
+
+SCHEMATIC_PATH = Path("hardware/helios-one.kicad_sch")
+BOM_PATH = Path("hardware/bom.yaml")
+
+def test_law_i_mosfet_killswitch_exists():
+    """
+    Law I: Kill Switch is Physics
+    Helios One MUST have a physical MOSFET that cuts power to ALL radios.
+    Green LED off = <1mV at antenna. No software backdoor possible.
+    """
+    assert SCHEMATIC_PATH.exists(), "Helios One schematic missing. Law III violation."
+    
+    schematic = SCHEMATIC_PATH.read_text()
+    assert "MOSFET_RF_CUT" in schematic, "Law I violation: No RF kill switch MOSFET found in schematic"
+    assert "LED_POWER_RF" in schematic, "Law I violation: No physical LED indicator for radio power"
+    
+    # BOM must list the specific kill switch part
+    bom = yaml.safe_load(BOM_PATH.read_text())
+    killswitch_parts = [p for p in bom['parts'] if 'kill_switch' in p.get('tags', [])]
+    assert len(killswitch_parts) >= 3, "Law I violation: Must have kill switches for WiFi, BT, Cellular"
+    
+    for part in killswitch_parts:
+        assert part['type'] == 'MOSFET', f"Law I violation: {part['name']} must be hardware MOSFET, not GPIO"
+        assert part['controlled_by'] == 'physical_switch', "Law I violation: Cannot be software controlled"
+
+def test_law_ii_rep_not_equity():
+    """
+    Law II: Rep > Equity
+    Repo must have no cap table, no SAFEs, no equity docs.
+    """
+    forbidden = ['cap_table', 'SAFE_', 'shareholder', 'investor_agreement']
+    repo_files = list(Path(".").rglob("*"))
+    for f in repo_files:
+        assert not any(bad in f.name.lower() for bad in forbidden), f"Law II violation: {f} mentions equity"
+
+if __name__ == "__main__":
+    pytest.main([__file__])
