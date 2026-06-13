@@ -193,3 +193,7 @@ def test_law_ii_rep_not_equity():
 
 if __name__ == "__main__":
     pytest.main([__file__])
+   for sig in signatures/*.json; do
+     node proof.js $sig --rep >> reps.txt
+   done
+   # If sum of top 7 reps > threshold && all valid: merge
