@@ -1,0 +1,8 @@
+name: Law III Enforcement
+on: [pull_request]
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install pytest pyyaml && pytest tests/test_laws_static.py
