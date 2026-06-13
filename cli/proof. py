@@ -22,3 +22,8 @@ if __name__ == "__main__":
     for oath in .heavenet/*.json; do
       node proof.js $oath
     done
+- name: Law II - Verify Maintainer Oaths
+  run: |
+    for oath in .heavenet/*.json; do
+      node proof.js $oath
+    done
