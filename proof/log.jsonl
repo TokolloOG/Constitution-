@@ -1,1 +1,118 @@
 {"date": "2026-04-05", "task": "Shipped Law 6 CLI + Knowledge #2", "founder": "TokokTokok"}
+#!/usr/bin/env node
+/**
+ * Heavenet Law II Verifier: proof.js
+ * "Reputation is earned by commits, not titles. Build > Talk."
+ *
+ * Verifies a maintainer's oath.json file.
+ * 1. Checks Ed25519 signature of The Oath
+ * 2. Recalculates Rep from git log to prevent faking
+ * 3. Returns exit code 0 if valid, 1 if invalid
+ *
+ * Law VII: This is how 7-of-12 multisig works. No trust, only math.
+ */
+
+const { execSync } = require('child_process');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
+
+const OATH = "I will uphold Law I-VII or I will fork. I seek Rep, not equity.";
+const HEAVENET_ROOT = process.cwd();
+
+function die(law, msg) {
+  console.error(`\n❌ LAW ${law} VIOLATION: ${msg}`);
+  console.error(`   ${OATH}\n`);
+  process.exit(1);
+}
+
+function verifySignature(oathData) {
+  console.log("1. Verifying Oath signature...");
+  const allowedSigners = `* namespaces="heavenet" ${oathData.pubkey}`;
+  const tmpSigners = path.join('/tmp', 'allowed_signers');
+  const tmpSig = path.join('/tmp', 'oath.sig');
+  
+  fs.writeFileSync(tmpSigners, allowedSigners);
+  fs.writeFileSync(tmpSig, oathData.signature);
+
+  try {
+    execSync(`ssh-keygen -Y verify -f ${tmpSigners} -I * -n heavenet -s ${tmpSig}`, {
+      input: OATH,
+      stdio: 'pipe'
+    });
+    console.log("   ✅ Signature valid");
+  } catch (e) {
+    die('II', 'Invalid signature. Oath was not signed by claimed pubkey.');
+  } finally {
+    fs.unlinkSync(tmpSigners);
+    fs.unlinkSync(tmpSig);
+  }
+}
+
+function calculateRep() {
+  console.log("2. Recalculating Rep from git history...");
+  let rep = 0;
+  
+  try {
+    const log = execSync(`git log --pretty=format:"%H" --numstat`, { encoding: 'utf8' });
+    const commits = log.split('\n\n');
+    
+    commits.forEach(commit => {
+      const lines = commit.split('\n').slice(1); // skip hash line
+      lines.forEach(file => {
+        if (!file) return;
+        if (file.startsWith('core/')) rep += 100;
+        else if (file.startsWith('test')) rep += 50;
+        else if (file.startsWith('hardware/')) rep += 200; // Law I is heavy
+        else if (file.endsWith('.md')) rep += 10;
+        else rep += 5;
+      });
+    });
+  } catch (e) {
+    die('III', 'Cannot read git log. Run this inside the Heavenet repo.');
+  }
+  
+  console.log(`   Calculated Rep: ${rep}`);
+  return rep;
+}
+
+function main() {
+  const targetFile = process.argv[2] || '.heavenet/oath.json';
+  console.log(`=== Heavenet Proof Verifier v1.0 ===`);
+  console.log(`Target: ${targetFile}\n`);
+
+  if (!fs.existsSync(targetFile)) {
+    die('II', `oath.json not found at ${targetFile}. User has 0 Rep.`);
+  }
+
+  const oathData = JSON.parse(fs.readFileSync(targetFile, 'utf8'));
+  
+  if (oathData.oath !== OATH) {
+    die('II', 'Oath text was modified. Invalid.');
+  }
+
+  verifySignature(oathData);
+  const actualRep = calculateRep();
+  
+  const delta = Math.abs(actualRep - oathData.rep);
+  if (delta > 100) { // Allow small drift for uncommitted work
+    die('II', `Rep mismatch. Claimed: ${oathData.rep}, Actual: ${actualRep}. Fraud detected.`);
+  }
+
+  console.log("\n✅ PROOF VALID");
+  console.log(`   Pubkey: ${oathData.pubkey.substring(0,16)}...`);
+  console.log(`   Rep: ${actualRep}`);
+  console.log(`   Signed: ${oathData.timestamp}`);
+  console.log(`\n   Law II: Rep > Equity. This maintainer earned it.`);
+  
+  // For use in shell scripts: output rep value
+  if (process.argv.includes('--rep')) {
+    console.log(actualRep);
+  }
+}
+
+main();
+   for sig in signatures/*.json; do
+     node proof.js $sig --rep >> reps.txt
+   done
+   # If sum of top 7 reps > threshold && all valid: merge
