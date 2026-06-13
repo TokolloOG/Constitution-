@@ -1,0 +1,16 @@
+parts:
+    - name: RF_KILL_WIFI
+    type: MOSFET
+    tags: [kill_switch]
+    controlled_by: physical_switch
+    - name: RF_KILL_BT
+    type: MOSFET
+    tags: [kill_switch]
+    controlled_by: physical_switch
+    - name: RF_KILL_CELL
+    type: MOSFET
+    tags: [kill_switch]
+    controlled_by: physical_switch
+    - name: LED_POWER_RF
+    type: LED
+    description: "Green when radio has power. Off = <1mV at antenna"
