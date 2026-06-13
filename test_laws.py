@@ -15,7 +15,9 @@ def print_result(response_data, status_code):
     """Print response result"""
     print(f"Status Code: {status_code}")
     print(f"Response: {json.dumps(response_data, indent=2)}")
-
+def test_verify_script_exists():
+    """Law III: verify.js must exist to enforce Law I on hardware."""
+    assert Path("verify.js").exists(), "Law I cannot be verified. verify.js missing."
 def test_1_valid_data():
     """Test 1: Send valid data with correct api_key, user_id, action, ip=127.0.0.1"""
     print_test_header(1, "Valid Data - Should Pass All Laws")
