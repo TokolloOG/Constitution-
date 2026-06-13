@@ -17,3 +17,8 @@ if __name__ == "__main__":
     import sys
     task = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "Shipped Law 6 CLI"
     ship(task)
+- name: Law II - Verify Maintainer Oaths
+  run: |
+    for oath in .heavenet/*.json; do
+      node proof.js $oath
+    done
