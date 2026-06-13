@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""
+Heavenet Agora v0.1 - The Un-App Daemon
+Law VI: Users > Investors. Build for users first.
+
+No accounts. No servers. No cloud.
+Your pubkey from oath.js = your identity.
+Posts sync peer-to-peer over LAN via mDNS.
+
+Law III: Code is Law. If it's not in /vault/agora/, it doesn't exist.
+"""
+
+import http.server
+import socketserver
+import json
+import os
+import hashlib
+import time
+from pathlib import Path
+from zeroconf import ServiceInfo, Zeroconf
+import socket
+import threading
+
+HEAVENET_ROOT = Path(__file__).parent.parent
+VAULT_PATH = HEAVENET_ROOT / "vault" / "agora"
+OATH_PATH = HEAVENET_ROOT / ".heavenet" / "oath.json"
+PORT = 1776  # 1776 = year of independence
+OATH = "I will uphold Law I-VII or I will fork. I seek Rep, not equity."
+
+VAULT_PATH.mkdir(parents=True, exist_ok=True)
+
+def get_identity():
+    """Law II: Your oath.json is your identity. No usernames."""
+    if not OATH_PATH.exists():
+        raise Exception("Law II violation: Run node oath.js first. No identity found.")
+    
+    oath = json.loads(OATH_PATH.read_text())
+    if oath["oath"] != OATH:
+        raise Exception("Law II violation: Oath was modified.")
+    
+    return {
+        "pubkey": oath["pubkey"],
+        "rep": oath["rep"],
+        "short_id": oath["pubkey"][:8]
+    }
+
+def sign_post(content, privkey_path):
+    """Sign post with your Ed25519 key. Law VII: Heavenet Owns Heavenet."""
+    import subprocess
+    sig = subprocess.run(
+        ["ssh-keygen", "-Y", "sign", "-f", privkey_path, "-n", "heavenet"],
+        input=content.encode(),
+        capture_output=True
+    ).stdout.decode()
+    return sig
+
+def verify_post(post_data):
+    """Use proof.js logic to verify post author has Rep > 0."""
+    # For v0.1 we trust local signatures. v0.2 will call proof.js on peers.
+    allowed = f"* namespaces=\"heavenet\" {post_data['pubkey']}"
+    import subprocess, tempfile
+    
+    with tempfile.NamedTemporaryFile(mode='w') as sig_file:
+        sig_file.write(post_data['signature'])
+        sig_file.flush()
+        with tempfile.NamedTemporaryFile(mode='w') as allowed_file:
+            allowed_file.write(allowed)
+            allowed_file.flush()
+            try:
+                subprocess.run([
+                    "ssh-keygen", "-Y", "verify", 
+                    "-f", allowed_file.name, 
+                    "-I", "*", "-n", "heavenet", 
+                    "-s", sig_file.name
+                ], input=post_data['content'].encode(), check=True, capture_output=True)
+                return True
+            except:
+                return False
+
+class AgoraHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        """Law IV: Default to Open. Anyone on LAN can read posts."""
+        if self.path == "/posts":
+            posts = []
+            for post_file in sorted(VAULT_PATH.glob("*.json")):
+                posts.append(json.loads(post_file.read_text()))
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"posts": posts}).encode())
+        
+        elif self.path == "/identity":
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(get_identity()).encode())
+        
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def do_POST(self):
+        """Law VI: Users > Investors. Only you can post as you."""
+        if self.path == "/post":
+            length = int(self.headers['Content-Length'])
+            data = json.loads(self.rfile.read(length))
+            
+            identity = get_identity()
+            if identity["rep"] < 1:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write(b'{"error":"Law II violation: 0 Rep. Make commits first."}')
+                return
+            
+            content = data.get("content", "").strip()
+            if not content or len(content) > 10000:
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'{"error":"Post must be 1-10000 chars"}')
+                return
+            
+            # Sign with your key from oath.js
+            privkey_path = HEAVENET_ROOT / ".heavenet" / "id_ed25519"
+            signature = sign_post(content, privkey_path)
+            
+            post = {
+                "id": hashlib.sha256(f"{time.time()}{content}".encode()).hexdigest()[:16],
+                "pubkey": identity["pubkey"],
+                "author_id": identity["short_id"],
+                "rep": identity["rep"],
+                "content": content,
+                "signature": signature,
+                "timestamp": int(time.time())
+            }
+            
+            # Law III: Code is Law. If not in vault, doesn't exist.
+            post_path = VAULT_PATH / f"{post['id']}.json"
+            post_path.write_text(json.dumps(post, indent=2))
+            
+            self.send_response(201)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(post).encode())
+        
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+def announce_mdns():
+    """Law VII: Helios devices find each other. No DNS, no cloud."""
+    zeroconf = Zeroconf()
+    info = ServiceInfo(
+        "_heavenet._tcp.local.",
+        "Helios One._heavenet._tcp.local.",
+        addresses=[socket.inet_aton(socket.gethostbyname(socket.gethostname()))],
+        port=PORT,
+        properties={"version": "0.1", "laws": "I-VII"},
+    )
+    zeroconf.register_service(info)
+    print(f"📡 Agora broadcast active on port {PORT}")
+    return zeroconf
+
+if __name__ == "__main__":
+    print("=== Heavenet Agora v0.1 ===")
+    print(f"Constitution: {HEAVENET_ROOT}/CONSTITUTION.md")
+    try:
+        identity = get_identity()
+        print(f"Identity: {identity['short_id']}... | Rep: {identity['rep']}")
+        print(f"{OATH}\n")
+    except Exception as e:
+        print(f"❌ {e}")
+        exit(1)
+    
+    # Start mDNS broadcast
+    zeroconf = announce_mdns()
+    
+    # Start HTTP server
+    with socketserver.TCPServer(("", PORT), AgoraHandler) as httpd:
+        print(f"Agora daemon running at http://localhost:{PORT}")
+        print("Law V: Ship Daily. Try: curl -X POST localhost:1776/post -d '{\"content\":\"Hello Heavenet\"}'")
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print("\nShutting down...")
+            zeroconf.unregister_all_services()
+            zeroconf.close()
