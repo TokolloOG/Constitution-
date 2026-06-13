@@ -36,3 +36,33 @@ def vault_recover():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=7712)
+def do_POST(self):
+    if self.path == "/post":
+        length = int(self.headers['Content-Length'])
+        data = json.loads(self.rfile.read(length))
+        identity = get_identity()
+        
+        content = data.get("content", "").strip()
+        recipients = data.get("recipients", [identity["pubkey"]]) # Default: encrypt to self
+        
+        # Law VI: Encrypt before saving
+        if ENCRYPTION_ENABLED:
+            encrypted = subprocess.run(
+                ["node", "daemon/crypto.js", "encrypt", content] + recipients,
+                capture_output=True, text=True
+            ).stdout
+            content_to_store = encrypted
+        else:
+            content_to_store = content
+        
+        post = {
+            "id": hashlib.sha256(f"{time.time()}{content}".encode()).hexdigest()[:16],
+            "pubkey": identity["pubkey"],
+            "author_id": identity["short_id"],
+            "rep": identity["rep"],
+            "content": content_to_store,
+            "encrypted": ENCRYPTION_ENABLED,
+            "signature": sign_post(content, HEAVENET_ROOT / ".heavenet" / "id_ed25519"),
+            "timestamp": int(time.time())
+        }
+        #... rest same
