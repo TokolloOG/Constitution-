@@ -116,3 +116,7 @@ main();
      node proof.js $sig --rep >> reps.txt
    done
    # If sum of top 7 reps > threshold && all valid: merge
+   for sig in signatures/*.json; do
+     node proof.js $sig --rep >> reps.txt
+   done
+   # If sum of top 7 reps > threshold && all valid: merge
