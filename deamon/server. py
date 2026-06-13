@@ -184,3 +184,10 @@ if __name__ == "__main__":
             print("\nShutting down...")
             zeroconf.unregister_all_services()
             zeroconf.close()
+pip install zeroconf
+node oath.js  # if you haven't
+python daemon/server.py
+
+# In another terminal:
+curl -X POST localhost:1776/post -d '{"content":"Law V: Ship Daily"}'
+curl localhost:1776/posts
