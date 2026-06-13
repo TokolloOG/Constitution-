@@ -197,3 +197,21 @@ if __name__ == "__main__":
      node proof.js $sig --rep >> reps.txt
    done
    # If sum of top 7 reps > threshold && all valid: merge
+def test_law_vi_no_telemetry():
+    """Law VI: Users > Investors. No phone-home code allowed."""
+    forbidden_domains = ['google-analytics', 'facebook.com', 'mixpanel', 'sentry.io', 'amazonaws']
+    daemon_files = Path("daemon").rglob("*.py")
+    
+    for file in daemon_files:
+        content = file.read_text().lower()
+        for domain in forbidden_domains:
+            assert domain not in content, f"Law VI violation: {file} contains {domain}"
+    
+    # Check for requests.post to non-local IPs
+    for file in daemon_files:
+        content = file.read_text()
+        assert 'requests.post("https://' not in content, f"Law VI: {file} posts to cloud. Users > Investors."
+
+def test_law_vi_encryption_exists():
+    """Law VI: Posts must be encrypted. Plaintext is surveillance."""
+    assert Path("daemon/crypto.js").exists(), "Law VI violation: crypto.js missing. Posts are plaintext."
