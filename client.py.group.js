@@ -138,3 +138,109 @@ def main():
 
 if __name__ == "__main__":
     main()
+#!/usr/bin/env node
+/**
+ * Heavenet Groups v0.1
+ * Law II: Rep > Equity. Build > Talk.
+ *
+ * Create groups with Rep thresholds.
+ * group.json = { name, min_rep, members: [pubkeys] }
+ * Only members with Rep >= min_rep can post to group.
+ *
+ * Law VII: 7-of-12 for group admin actions.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const HEAVENET_ROOT = path.resolve(__dirname, '..');
+const GROUPS_PATH = path.join(HEAVENET_ROOT, 'vault', 'groups');
+const OATH = "I will uphold Law I-VII or I will fork. I seek Rep, not equity.";
+
+fs.mkdirSync(GROUPS_PATH, { recursive: true });
+
+function getMyRep() {
+    try {
+        const oath = JSON.parse(fs.readFileSync('.heavenet/oath.json'));
+        return oath.rep;
+    } catch {
+        return 0;
+    }
+}
+
+function getMyPubkey() {
+    const pubkey = fs.readFileSync('.heavenet/id_ed25519.pub', 'utf8').trim().split(' ')[1];
+    return pubkey;
+}
+
+function createGroup(name, minRep) {
+    const myRep = getMyRep();
+    if (myRep < minRep) {
+        console.log(`❌ Law II: Your Rep ${myRep} < ${minRep}. Build > Talk.`);
+        process.exit(1);
+    }
+
+    const group = {
+        name,
+        min_rep: minRep,
+        creator: getMyPubkey(),
+        created: new Date().toISOString(),
+        members: [getMyPubkey()], // Creator auto-member
+        oath: OATH
+    };
+
+    const file = path.join(GROUPS_PATH, `${name}.json`);
+    fs.writeFileSync(file, JSON.stringify(group, null, 2));
+    console.log(`✅ Group '${name}' created. Min Rep: ${minRep}`);
+    console.log(` File: ${file}`);
+}
+
+function listGroups() {
+    const files = fs.readdirSync(GROUPS_PATH);
+    console.log("=== HEAVENET GROUPS ===");
+    files.forEach(f => {
+        const g = JSON.parse(fs.readFileSync(path.join(GROUPS_PATH, f)));
+        console.log(`${g.name} | Min Rep: ${g.min_rep} | Members: ${g.members.length}`);
+    });
+}
+
+function canPost(groupName) {
+    const file = path.join(GROUPS_PATH, `${groupName}.json`);
+    if (!fs.existsSync(file)) return false;
+
+    const group = JSON.parse(fs.readFileSync(file));
+    const myRep = getMyRep();
+    const myKey = getMyPubkey();
+
+    return myRep >= group.min_rep && group.members.includes(myKey);
+}
+
+function main() {
+    const cmd = process.argv[2];
+
+    if (cmd === 'create') {
+        const [name, minRep] = process.argv.slice(3);
+        if (!name ||!minRep) {
+            console.log("Usage: node groups.js create <name> <min_rep>");
+            process.exit(1);
+        }
+        createGroup(name, parseInt(minRep));
+    }
+
+    else if (cmd === 'list') {
+        listGroups();
+    }
+
+    else if (cmd === 'canpost') {
+        const name = process.argv[3];
+        console.log(canPost(name)? "true" : "false");
+    }
+
+    else {
+        console.log("Heavenet Groups v0.1");
+        console.log("Commands: create <name> <min_rep> | list | canpost <name>");
+    }
+}
+
+main();
