@@ -1,0 +1,28 @@
+{
+  "version": "0.1",
+  "oath": "I will uphold Law I-VII or I will fork. I seek Rep, not equity.",
+  "laws": "https://github.com/TokolloOG/heavenet/blob/main/CONSTITUTION.md",
+  "devices": {
+    "Helios One": {
+      "current": "0.1.0",
+      "releases": [
+        {
+          "version": "0.1.0",
+          "date": "2026-06-14",
+          "sha256": "0000000000000000",
+          "file": "firmware/helios-v0.1.0.bin",
+          "min_rep_to_run": 0,
+          "required_signatures": 7,
+          "signatures": [],
+          "notes": "Genesis. Law I: MOSFET kill switch. Law VI: Agora mesh.",
+          "status": "DRAFT"
+        }
+      ]
+    }
+  },
+  "law_vii": {
+    "threshold": 7,
+    "min_total_rep": 7000,
+    "quorum_rules": "7 valid proof.js checks + total Rep >= 7000"
+  }
+}
