@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "oath": "I will uphold Law I-VII or I will fork. I seek Rep, not equity.",
+  "genesis_date": "2026-06-14",
+  "quorum_size": 12,
+  "threshold": 7,
+  "min_rep_to_sign": 100,
+  "members": [
+    {
+      "pubkey": Ed25519,
+      "alias": "TokolloOG",
+      "rep": 500,
+      "status": "genesis"
+    }
+  ],
+  "law_vii": "To add/remove members requires 7-of-12 vote. No exceptions."
+}
