@@ -6,3 +6,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: pip install pytest pyyaml && pytest tests/test_laws_static.py
+# 1. Build firmware
+make firmware/helios-v0.1.bin
+
+# 2. You sign it
+node sign_firmware.js firmware/helios-v0.1.bin
+
+# 3. 6 other maintainers do the same
+# 4. Open PR. law.yml runs test_law_vii_firmware_multisig()
+# 5. If 7 valid sigs: ✅ merge. If not: ❌ blocked.
+
+# 6. Anyone can audit:
+for sig in firmware/signatures/*.json; do node proof.js $sig; done
