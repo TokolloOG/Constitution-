@@ -7,7 +7,7 @@
   "min_rep_to_sign": 100,
   "members": [
     {
-      "pubkey": Ed25519,
+      "pubkey": AAAAC3NzaC1lZDI1NTE5AAAAIL49M9+rt52adPYViAEQ/cP6GSLLw79hZRDpoQtlMSv6 ,
       "alias": "TokolloOG",
       "rep": 500,
       "status": "genesis"
