@@ -1,0 +1,4 @@
+# Heavenet Genesis Quorum
+# Format: <TokolloOG> namespaces="heavenet" <AAAAC3NzaC1lZDI1NTE5AAAAIL49M9+rt52adPYViAEQ/cP6GSLLw79hZRDpoQtlMSv6>
+tokollo@heavenet.local namespaces="heavenet" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL49M9+rt52adPYViAEQ/cP6GSLLw79hZRDpoQtlMSv6
+# add 11 more lines
