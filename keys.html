@@ -1,0 +1,7 @@
+<!DOCTYPE html><script type="module">
+import * as ethers from 'https://esm.sh/ethers@6.13.5';
+for(let i=1;i<=7;i++){
+  let w=ethers.Wallet.createRandom();
+  document.body.innerHTML+=`<b>Signer ${i}</b><br>Address: ${w.address}<br>Private Key: ${w.privateKey}<br><br>`;
+}
+</script><body style="font-family:monospace;word-break:break-all;padding:10px"></body>
