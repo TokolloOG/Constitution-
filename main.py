@@ -132,3 +132,13 @@ from server import run_server
 
 if __name__ == '__main__':
     run_server(host='0.0.0.0', port=5000)
+"""
+HeavenET main entry point.
+Imports and runs the Flask server.
+No secrets, all placeholders.
+"""
+
+from server import app
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
