@@ -258,3 +258,57 @@ def test_law_vii_no_single_admin():
         content = file.read_text().lower()
         for term in forbidden:
             assert term not in content, f"Law VII violation: {file} contains {term}. No kings."
+import pytest
+from server import app, get_public_key, get_private_key
+
+class TestServerImports:
+    def test_server_app_exists(self):
+        """Test that Flask app is defined"""
+        assert app is not None
+        assert hasattr(app, 'route')
+
+    def test_get_functions_exist(self):
+        """Test that key getter functions exist"""
+        assert callable(get_public_key)
+        assert callable(get_private_key)
+
+class TestFlaskRoutes:
+    def test_index_route_returns_200(self, client):
+        """Test that / route returns 200"""
+        response = client.get('/')
+        assert response.status_code == 200
+
+    def test_keys_route_returns_200(self, client):
+        """Test that /keys route returns 200"""
+        response = client.get('/keys')
+        assert response.status_code == 200
+
+    def test_health_route_returns_200(self, client):
+        """Test that /health route returns 200"""
+        response = client.get('/health')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['status'] == 'ok'
+
+    def test_api_public_key_returns_200(self, client):
+        """Test that /api/public-key returns 200"""
+        response = client.get('/api/public-key')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert 'public_key' in data
+
+class TestKeyManagement:
+    def test_public_key_returns_placeholder(self):
+        """Test that public key defaults to placeholder"""
+        key = get_public_key()
+        assert isinstance(key, str)
+        assert len(key) > 0
+
+    def test_private_key_returns_placeholder(self):
+        """Test that private key defaults to placeholder"""
+        key = get_private_key()
+        assert isinstance(key, str)
+        assert len(key) > 0
+
+if __name__ == '__main__':
+    pytest.main([__file__, '-v'])
