@@ -167,3 +167,90 @@ function main() {
 }
 
 main();
+/**
+ * HeavenET Signature Verifier
+ * Accepts base58-encoded public key, signature, and message
+ * Verifies using TweetNaCl
+ * Usage: node verify.js <public_key_base58> <signature_base58> <message>
+ */
+
+const nacl = require('tweetnacl');
+const bs58 = require('bs58');
+
+/**
+ * Verify a detached signature
+ * @param {string} publicKeyB58 - Public key in base58 format
+ * @param {string} signatureB58 - Signature in base58 format
+ * @param {string} message - Original message
+ * @returns {boolean} True if signature is valid, false otherwise
+ */
+function verifySignature(publicKeyB58, signatureB58, message) {
+  try {
+    // Decode from base58
+    const publicKey = Buffer.from(bs58.decode(publicKeyB58));
+    const signature = Buffer.from(bs58.decode(signatureB58));
+    const messageBuffer = Buffer.from(message, 'utf-8');
+
+    // Verify the detached signature
+    const isValid = nacl.sign.detached.verify(
+      messageBuffer,
+      signature,
+      publicKey
+    );
+
+    return isValid;
+  } catch (error) {
+    console.error('Error during verification:', error.message);
+    return false;
+  }
+}
+
+/**
+ * Main execution
+ */
+function main() {
+  // Get arguments from command line
+  const args = process.argv.slice(2);
+
+  if (args.length < 3) {
+    console.log('\n========================================');
+    console.log('🔐 HeavenET Signature Verifier');
+    console.log('========================================\n');
+    console.log('Usage: node verify.js <public_key_base58> <signature_base58> <message>\n');
+    console.log('Example:');
+    console.log('  node verify.js "3vAC..." "2nkL..." "Hello, HeavenET"\n');
+    console.log('Arguments:');
+    console.log('  <public_key_base58>  - Public key in base58 format');
+    console.log('  <signature_base58>   - Signature in base58 format');
+    console.log('  <message>            - Original message\n');
+    process.exit(0);
+  }
+
+  const [publicKeyB58, signatureB58, message] = args;
+
+  console.log('\n========================================');
+  console.log('🔐 HeavenET Signature Verifier');
+  console.log('========================================\n');
+
+  console.log('Public Key (base58):');
+  console.log(publicKeyB58);
+  console.log();
+
+  console.log('Signature (base58):');
+  console.log(signatureB58);
+  console.log();
+
+  console.log('Message:');
+  console.log(message);
+  console.log();
+
+  const isValid = verifySignature(publicKeyB58, signatureB58, message);
+
+  console.log('========================================');
+  console.log(`Signature Valid: ${isValid}`);
+  console.log('========================================\n');
+
+  process.exit(isValid ? 0 : 1);
+}
+
+main();
