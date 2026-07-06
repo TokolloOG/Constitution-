@@ -112,3 +112,58 @@ function main() {
 }
 
 main();
+/**
+ * Verify a signature using TweetNaCl
+ * Uses placeholder keys for demonstration
+ */
+
+const nacl = require('tweetnacl');
+const bs58 = require('bs58');
+
+// Placeholder keypair (DO NOT USE IN PRODUCTION)
+const PLACEHOLDER_PUBLIC_KEY = 'PLACEHOLDER_KEY_PUBLIC_BASE58';
+const PLACEHOLDER_MESSAGE = 'Hello, HeavenET';
+
+function verifySignature(publicKeyB58, message, signatureB58) {
+  try {
+    // Decode from Base58
+    const publicKey = Buffer.from(bs58.decode(publicKeyB58));
+    const signature = Buffer.from(bs58.decode(signatureB58));
+    const messageBuffer = Buffer.from(message, 'utf-8');
+    
+    // Verify the signature
+    const isValid = nacl.sign.detached.verify(
+      messageBuffer,
+      signature,
+      publicKey
+    );
+    
+    return isValid;
+  } catch (error) {
+    console.error('Verification error:', error.message);
+    return false;
+  }
+}
+
+function main() {
+  console.log('=== Signature Verification Demo ===\n');
+  
+  console.log('Public Key (Placeholder):', PLACEHOLDER_PUBLIC_KEY);
+  console.log('Message:', PLACEHOLDER_MESSAGE);
+  console.log('Signature (Placeholder): PLACEHOLDER_KEY_SIGNATURE_BASE58\n');
+  
+  // This will fail with placeholder keys, as expected
+  const isValid = verifySignature(
+    PLACEHOLDER_PUBLIC_KEY,
+    PLACEHOLDER_MESSAGE,
+    'PLACEHOLDER_KEY_SIGNATURE_BASE58'
+  );
+  
+  console.log('Signature Valid:', isValid);
+  console.log('\nTo use real signatures:');
+  console.log('1. Generate keys with gen_keys.js');
+  console.log('2. Create a signature using nacl.sign.detached()');
+  console.log('3. Pass the base58-encoded values to verifySignature()\n');
+}
+
+main();
