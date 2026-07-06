@@ -21,3 +21,28 @@
   },
   "devDependencies": {}
 }
+{
+  "name": "heavenet",
+  "version": "1.0.0",
+  "description": "Python Flask server with Node crypto tools",
+  "main": "gen_keys.js",
+  "type": "module",
+  "scripts": {
+    "gen-keys": "node gen_keys.js",
+    "verify": "node verify.js",
+    "test": "echo \"No node tests yet\""
+  },
+  "keywords": [
+    "crypto",
+    "tweetnacl",
+    "bs58",
+    "flask",
+    "python"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "tweetnacl": "^1.0.3",
+    "bs58": "^5.0.0"
+  }
+}
