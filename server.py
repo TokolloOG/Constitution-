@@ -66,3 +66,29 @@ def do_POST(self):
             "timestamp": int(time.time())
         }
         #... rest same
+from flask import Flask, render_template
+import os
+
+app = Flask(__name__, template_folder='templates')
+
+@app.route('/')
+def index():
+    """Serve the main index page."""
+    return render_template('index.html')
+
+@app.route('/keys')
+def keys_page():
+    """Serve the keys management page."""
+    return render_template('keys.html')
+
+@app.route('/health')
+def health():
+    """Health check endpoint."""
+    return {'status': 'ok'}, 200
+
+def run_server(host='127.0.0.1', port=5000):
+    """Run the Flask development server."""
+    app.run(host=host, port=port, debug=False)
+
+if __name__ == '__main__':
+    run_server()
