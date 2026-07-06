@@ -239,3 +239,23 @@ MIT License - See LICENSE file for details
 ---
 
 For more information, visit [Heavenet Constitution](https://github.com/TokolloOG/Constitution-)
+# 🌐 HeavenET
+
+A production-ready starter project. No secrets, no real keys - built entirely for local dev.
+
+## Stack
+- **Backend**: Python Flask
+- **Crypto**: Node.js TweetNaCl + BS58
+- **Testing**: pytest
+
+## Requirements
+- Python 3.7+
+- Node.js 14+
+- pip
+- npm
+
+## Installation & Setup
+
+### Step 1: Install Python Dependencies
+```bash
+pip install -r requirements.txt
