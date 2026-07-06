@@ -122,3 +122,13 @@ if __name__ == "__main__":
     port = int(os.getenv("FLASK_PORT", 5000))
     logger.info("Starting Heavenet API on port {}".format(port))
     app.run(debug=True, host='0.0.0.0', port=port)
+"""
+HeavenET main entry point.
+Imports and runs the Flask server.
+No secrets, all placeholders.
+"""
+
+from server import run_server
+
+if __name__ == '__main__':
+    run_server(host='0.0.0.0', port=5000)
