@@ -24,3 +24,12 @@ if __name__ == "__main__":
     output = run_all_laws(test_data)
     print(output)
 EOF
+"""
+HeavenET main entry point.
+Imports and runs the Flask server.
+"""
+
+from server import run_server
+
+if __name__ == '__main__':
+    run_server(host='0.0.0.0', port=5000)
