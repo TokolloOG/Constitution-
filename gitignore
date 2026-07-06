@@ -56,3 +56,8 @@ htmlcov/
 
 # OS
 *.log
+.env
+keys.html
+node_modules/
+__pycache__/
+.venv/
