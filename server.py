@@ -92,3 +92,73 @@ def run_server(host='127.0.0.1', port=5000):
 
 if __name__ == '__main__':
     run_server()
+"""
+HeavenET Flask server.
+Serves index.html and keys.html from /templates.
+Loads keys from environment only (never hardcoded).
+Uses PLACEHOLDER values in development.
+"""
+
+from flask import Flask, render_template
+import os
+
+app = Flask(__name__, template_folder='templates')
+
+
+def get_public_key():
+    """
+    Load public key from environment.
+    Falls back to PLACEHOLDER in development.
+    """
+    return os.getenv('PUBLIC_KEY', 'PLACEHOLDER_PUBLIC_KEY_BASE58')
+
+
+def get_private_key():
+    """
+    Load private key from environment.
+    Falls back to PLACEHOLDER in development.
+    WARNING: Never use this in production without proper secret management.
+    """
+    return os.getenv('PRIVATE_KEY', 'PLACEHOLDER_PRIVATE_KEY_BASE58')
+
+
+@app.route('/')
+def index():
+    """Serve the main index page."""
+    return render_template('index.html')
+
+
+@app.route('/keys')
+def keys_page():
+    """Serve the keys management page."""
+    public_key = get_public_key()
+    return render_template('keys.html', public_key=public_key)
+
+
+@app.route('/health')
+def health():
+    """Health check endpoint."""
+    return {'status': 'ok', 'service': 'heavenet'}, 200
+
+
+@app.route('/api/public-key')
+def api_public_key():
+    """API endpoint to retrieve public key."""
+    return {'public_key': get_public_key()}, 200
+
+
+def run_server(host='127.0.0.1', port=5000, debug=False):
+    """
+    Run the Flask development server.
+    
+    Args:
+        host (str): Host to bind to. Default: 127.0.0.1
+        port (int): Port to bind to. Default: 5000
+        debug (bool): Enable debug mode. Default: False
+    """
+    print(f"🚀 HeavenET server starting on {host}:{port}")
+    app.run(host=host, port=port, debug=debug)
+
+
+if __name__ == '__main__':
+    run_server(host='0.0.0.0', port=5000)
