@@ -1,0 +1,23 @@
+{
+  "name": "heavenet",
+  "version": "1.0.0",
+  "description": "HeaveneT - Crypto signing and verification with tweetnacl and bs58 encoding",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Tests for JS crypto\" && exit 0"
+  },
+  "keywords": [
+    "crypto",
+    "signing",
+    "verification",
+    "tweetnacl",
+    "bs58"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "tweetnacl": "^1.8.1",
+    "bs58": "^5.0.0"
+  },
+  "devDependencies": {}
+}
